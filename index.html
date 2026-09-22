@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EDUCORE | Learn • Practice • Achieve</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">🎓</span>EDUCORE</div>
+      <div class="topbar-search">
+        <input id="globalSearch" type="text" placeholder="Search classes, chapters, questions..." aria-label="Search EDUCORE" />
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" data-action="notifications" aria-label="Notifications">🔔</button>
+        <button class="icon-btn" data-action="settings" aria-label="Settings">⚙️</button>
+        <button class="profile-pill" data-action="profile" aria-label="Student profile">👤 Student</button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="sidebar">
+        <div class="nav-group">
+          <div class="nav-label">Learn</div>
+          <button class="nav-item active" data-tab="dashboard">🏠 Home</button>
+          <button class="nav-item" data-tab="classes">📚 My Classes</button>
+          <button class="nav-item" data-tab="ai">🤖 AI Tutor</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">Practice</div>
+          <button class="nav-item" data-tab="practice">📝 Practice</button>
+          <button class="nav-item" data-tab="tests">🏆 Tests</button>
+          <button class="nav-item" data-tab="mistakes">📕 Mistake Book</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">Improve</div>
+          <button class="nav-item" data-tab="progress">📊 Progress</button>
+          <button class="nav-item" data-tab="planner">🎯 Study Planner</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-label">Account</div>
+          <button class="nav-item" data-tab="settings">⚙️ Settings</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="panel welcome">
+          <div>
+            <h1>Good morning, Student 👋</h1>
+            <p>Continue your learning journey from where you stopped.</p>
+          </div>
+          <button class="action-btn" data-action="continue-learning">▶ Continue Learning</button>
+        </section>
+
+        <section class="panel">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <small>Overall Progress</small>
+              <strong>68%</strong>
+            </div>
+            <div class="stat-card">
+              <small>Study Streak</small>
+              <strong>🔥 7 days</strong>
+            </div>
+            <div class="stat-card">
+              <small>Questions Solved</small>
+              <strong>240</strong>
+            </div>
+            <div class="stat-card">
+              <small>Tests Completed</small>
+              <strong>8</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2 class="section-title">📚 Continue Learning</h2>
+            <button class="secondary-btn" data-action="curriculum">View all classes</button>
+          </div>
+          <div class="courses">
+            <article class="course-card">
+              <div class="course-thumb">🧬</div>
+              <div>
+                <h3>Class 11 Biology</h3>
+                <p>Chapter 2 • Biological Classification</p>
+                <div class="bar"><span style="width: 72%"></span></div>
+              </div>
+              <button class="course-action" data-action="open-biology">Open</button>
+            </article>
+            <article class="course-card">
+              <div class="course-thumb">⚗️</div>
+              <div>
+                <h3>Class 11 Chemistry</h3>
+                <p>Chapter 3 • Classification of Elements</p>
+                <div class="bar"><span style="width: 44%"></span></div>
+              </div>
+              <button class="course-action" data-action="open-chemistry">Open</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel ai-panel">
+          <div class="section-header">
+            <h2 class="section-title">🤖 AI Study Assistant</h2>
+            <button class="secondary-btn" data-action="ai-explore">Explore all modes</button>
+          </div>
+          <p>Ask a question, check your understanding, or turn a difficult concept into a clear exam-ready explanation.</p>
+          <div class="ai-actions">
+            <button class="action-btn" data-action="ai-explain">Explain</button>
+            <button class="secondary-btn" data-action="ai-hint">Hint</button>
+            <button class="secondary-btn" data-action="ai-step">Step-by-step</button>
+            <button class="secondary-btn" data-action="ai-answer">Exam Answer</button>
+          </div>
+        </section>
+
+        <div class="two-col">
+          <section class="panel">
+            <div class="section-header">
+              <h2 class="section-title">📌 Recommended Practice</h2>
+            </div>
+            <div class="list">
+              <div class="list-item">
+                <span>Revise Biological Classification</span>
+                <span class="tag">20 min</span>
+              </div>
+              <div class="list-item">
+                <span>Solve 15 MCQs</span>
+                <span class="tag">15 min</span>
+              </div>
+              <div class="list-item">
+                <span>Review mistake book</span>
+                <span class="tag">10 min</span>
+              </div>
+              <div class="list-item">
+                <span>Quick revision</span>
+                <span class="tag">10 min</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-header">
+              <h2 class="section-title">📅 Upcoming Tests</h2>
+            </div>
+            <div class="list">
+              <div class="list-item">
+                <span>Biology chapter test</span>
+                <span class="tag">Thu</span>
+              </div>
+              <div class="list-item">
+                <span>Chemistry quick quiz</span>
+                <span class="tag">Fri</span>
+              </div>
+              <div class="list-item">
+                <span>Weekly revision check</span>
+                <span class="tag">Sat</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2 class="section-title">⚡ Quick Access</h2>
+          </div>
+          <div class="tool-grid">
+            <button class="tool-btn" data-tool="notes"><span class="icon">📖</span><b>Notes</b><span>Chapter-wise study material</span></button>
+            <button class="tool-btn" data-tool="lectures"><span class="icon">🎬</span><b>Lectures</b><span>Watch and continue</span></button>
+            <button class="tool-btn" data-tool="pyq"><span class="icon">🗂️</span><b>PYQs</b><span>Previous questions</span></button>
+            <button class="tool-btn" data-tool="tests"><span class="icon">📝</span><b>Mock Tests</b><span>Test your preparation</span></button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button data-tab="dashboard"><strong>⌂</strong>Home</button>
+      <button data-tab="classes"><strong>▣</strong>Classes</button>
+      <button data-tab="ai"><strong>✦</strong>AI</button>
+      <button data-tab="practice"><strong>✓</strong>Practice</button>
+      <button data-tab="settings"><strong>⚙</strong>More</button>
+    </nav>
+  </div>
+
+  <div id="appModal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">EDUCORE</h2>
+        <button class="close-btn" aria-label="Close modal" data-close-modal>✕</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="eduToast" class="toast" aria-live="polite"></div>
+
+  <script src="js/curriculum.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
