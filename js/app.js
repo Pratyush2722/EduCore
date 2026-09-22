@@ -81,6 +81,37 @@ function persistState() {
   writeStorage(STORAGE_KEYS.mistakes, appState.mistakes);
   writeStorage(STORAGE_KEYS.planner, appState.plannerTasks);
   writeStorage(STORAGE_KEYS.bookmarks, appState.bookmarkedNotes);
+  updateDashboardStats();
+}
+
+function updateDashboardStats() {
+  const results = [...appState.practiceResults, ...appState.testResults];
+  const answered = results.reduce((sum, item) => sum + Number(item.total || 0), 0);
+  const correct = results.reduce((sum, item) => sum + Number(item.score || 0), 0);
+  const dates = new Set(results.map(item => String(item.date || '').slice(0, 10)).filter(Boolean));
+  let streak = 0;
+  const cursor = new Date();
+  while (dates.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  const values = {
+    overallProgressStat: `${answered ? Math.round(correct / answered * 100) : 0}%`,
+    studyStreakStat: `${streak} day${streak === 1 ? '' : 's'}`,
+    questionsSolvedStat: answered,
+    testsCompletedStat: appState.testResults.length
+  };
+  Object.entries(values).forEach(([id, value]) => { const element = document.getElementById(id); if (element) element.textContent = value; });
+  const greeting = document.getElementById('welcomeGreeting');
+  if (greeting) greeting.textContent = `Good morning, ${appState.settings.name || 'Student'} 👋`;
+  ['biology', 'chemistry'].forEach(subject => {
+    const title = subject[0].toUpperCase() + subject.slice(1);
+    const attempts = results.filter(item => item.classNum === 11 && item.subjectName === title);
+    const total = attempts.reduce((sum, item) => sum + Number(item.total || 0), 0);
+    const score = attempts.reduce((sum, item) => sum + Number(item.score || 0), 0);
+    const bar = document.getElementById(`${subject}ProgressBar`);
+    if (bar) bar.style.width = `${total ? Math.round(score / total * 100) : 0}%`;
+  });
 }
 
 function escapeHtml(value) {
@@ -232,7 +263,7 @@ function eduOpenNote(noteId) {
   const item = allNotes().find(entry => entry.note.id === noteId);
   if (!item) return modal('Note unavailable', '<p>This note is no longer available.</p>');
   const saved = appState.bookmarkedNotes.includes(noteId);
-  modal(item.note.title, `<p>${escapeHtml(item.note.content)}</p><p><span class="tag">${item.cls.label} • ${item.subjectName} • ${item.chapter.name}</span></p><button class="secondary-btn" onclick="toggleNoteBookmark('${noteId}')">${saved ? '★ Saved' : '☆ Save note'}</button>`);
+  modal(item.note.title, `<div class="note-content"><p>${escapeHtml(item.note.content)}</p><h3>Topics</h3><ul>${item.chapter.topics.map(topic => `<li>${escapeHtml(topic)}</li>`).join('')}</ul></div><p><span class="tag">${item.cls.label} • ${item.subjectName} • ${item.chapter.name}</span></p><button class="secondary-btn" onclick="toggleNoteBookmark('${noteId}')">${saved ? '★ Saved' : '☆ Save note'}</button>`);
 }
 
 function toggleNoteBookmark(noteId) {
@@ -251,8 +282,8 @@ function eduOpenSavedNotes() {
 function eduLectures(classNum = 11, subjectName = 'all', chapterId = 'all') {
   const resources = allResources().filter(item => item.classNum === Number(classNum) && (subjectName === 'all' || item.subjectName === subjectName) && (chapterId === 'all' || item.chapter.id === chapterId));
   if (!resources.length) return modal('🎬 Lecture Library', '<div class="resource-item"><p>No lectures are available for this selection yet.</p></div>');
-  const body = resources.map(item => `<div class="resource-item"><h3>${escapeHtml(item.resource.title)}</h3><p><span class="tag">${item.resource.type}</span> <span class="tag">${item.cls.label} • ${item.subjectName} • ${item.chapter.name}</span></p>${item.resource.url ? `<a class="action-btn" href="${escapeHtml(item.resource.url)}" target="_blank" rel="noopener noreferrer">Open resource</a>` : '<span class="tag">Demo/local resource unavailable</span>'}</div>`).join('');
-  modal('🎬 Lecture Library', `<p>Only resources with URLs already present in the project are opened externally.</p>${body}`);
+  const body = resources.map(item => `<div class="resource-item"><h3>${escapeHtml(item.resource.title)}</h3><p><span class="tag">${item.resource.type}</span> <span class="tag">${item.cls.label} • ${item.subjectName} • ${item.chapter.name}</span></p><p>Topics: ${escapeHtml(item.chapter.topics.join(' • '))}</p>${item.resource.url ? `<a class="action-btn" href="${escapeHtml(item.resource.url)}" target="_blank" rel="noopener noreferrer">Open resource</a>` : '<span class="tag">Unavailable: no verified URL</span>'}</div>`).join('');
+  modal('🎬 Lecture Library', `<p>Lecture searches open on YouTube; the NCERT portal is the official textbook reference.</p>${body}`);
 }
 
 function questionsFor(classNum, subjectName, chapterId) {
@@ -262,13 +293,13 @@ function questionsFor(classNum, subjectName, chapterId) {
 function eduOpenPractice(classNum = 11, subjectName = 'all', chapterId = 'all') {
   const questions = questionsFor(classNum, subjectName, chapterId);
   if (!questions.length) return modal('☑️ Practice', '<div class="resource-item"><p>No sample practice questions are available for this selection yet.</p></div>');
-  modal('☑️ Practice', `<p>Sample Practice • ${questions.length} question${questions.length === 1 ? '' : 's'}</p><button class="action-btn" onclick="startLearningSession('practice', ${classNum}, '${subjectName}', '${chapterId}')">Start practice</button>`);
+  modal('☑️ Practice', `<p>Practice set • ${questions.length} question${questions.length === 1 ? '' : 's'} • Exam-style content, not verified PYQs.</p><button class="action-btn" onclick="startLearningSession('practice', ${classNum}, '${subjectName}', '${chapterId}')">Start practice</button>`);
 }
 
 function eduOpenTests(classNum = 11, subjectName = 'all', chapterId = 'all') {
   const questions = questionsFor(classNum, subjectName, chapterId);
   if (!questions.length) return modal('📝 Tests', '<div class="resource-item"><p>No sample test questions are available for this selection yet.</p></div>');
-  modal('📝 Tests', `<p>Demo Test • ${questions.length} question${questions.length === 1 ? '' : 's'}</p><button class="action-btn" onclick="startLearningSession('test', ${classNum}, '${subjectName}', '${chapterId}')">Start test</button>`);
+  modal('📝 Tests', `<p>Exam-Style Test • ${questions.length} question${questions.length === 1 ? '' : 's'} • Local practice, not an official paper.</p><button class="action-btn" onclick="startLearningSession('test', ${classNum}, '${subjectName}', '${chapterId}')">Start test</button>`);
 }
 
 function startLearningSession(mode, classNum, subjectName, chapterId) {
@@ -285,7 +316,7 @@ function renderLearningQuestion() {
   const answerButtons = question.question.options.map((option, index) => `<button class="option-btn ${selected === index ? 'selected' : ''}" ${submitted ? 'disabled' : ''} onclick="selectLearningAnswer(${index})">${String.fromCharCode(65 + index)}. ${escapeHtml(option)}</button>`).join('');
   const feedback = submitted ? `<div class="feedback ${selected === question.question.correctIndex ? 'correct' : 'incorrect'}"><strong>${selected === question.question.correctIndex ? 'Correct' : 'Incorrect'}</strong><p>${escapeHtml(question.question.explanation || '')}</p></div>` : '';
   const nextLabel = session.index === session.questions.length - 1 ? 'Finish' : 'Next';
-  modal(`${session.mode === 'test' ? '📝 Demo Test' : '☑️ Sample Practice'} • ${session.index + 1}/${session.questions.length}`, `<p><span class="tag">${question.question.label}</span> <span class="tag">${question.cls.label} • ${question.subjectName} • ${question.chapter.name}</span></p><div class="question-card"><h3>${escapeHtml(question.question.prompt)}</h3><div class="option-list">${answerButtons}</div>${feedback}</div><div class="ec-row"><span class="tag">Question ${session.index + 1} of ${session.questions.length}</span>${session.mode === 'test' && session.index > 0 ? '<button class="soft-btn" onclick="previousLearningQuestion()">Previous</button>' : ''}${!submitted ? '<button class="action-btn" onclick="submitLearningAnswer()">Check answer</button>' : `<button class="action-btn" onclick="nextLearningQuestion()">${nextLabel}</button>`}</div>`);
+  modal(`${session.mode === 'test' ? '📝 Exam-Style Test' : '☑️ Sample Practice'} • ${session.index + 1}/${session.questions.length}`, `<p><span class="tag">${question.question.label}</span> <span class="tag">${question.cls.label} • ${question.subjectName} • ${question.chapter.name}</span></p><div class="question-card"><h3>${escapeHtml(question.question.prompt)}</h3><div class="option-list">${answerButtons}</div>${feedback}</div><div class="ec-row"><span class="tag">Question ${session.index + 1} of ${session.questions.length}</span>${session.mode === 'test' && session.index > 0 ? '<button class="soft-btn" onclick="previousLearningQuestion()">Previous</button>' : ''}${!submitted ? '<button class="action-btn" onclick="submitLearningAnswer()">Check answer</button>' : `<button class="action-btn" onclick="nextLearningQuestion()">${nextLabel}</button>`}</div>`);
 }
 
 function selectLearningAnswer(index) {
@@ -315,7 +346,7 @@ function previousLearningQuestion() {
 
 function finishLearningSession() {
   const session = learningSession;
-  const result = { date: new Date().toISOString(), score: session.score, total: session.questions.length, classNum: session.classNum, subjectName: session.subjectName };
+  const result = { date: new Date().toISOString(), score: session.score, total: session.questions.length, classNum: session.classNum, subjectName: session.subjectName, chapterId: session.chapterId };
   if (session.mode === 'test') appState.testResults.push(result); else appState.practiceResults.push(result);
   persistState();
   const percentage = Math.round((session.score / session.questions.length) * 100);
@@ -500,6 +531,7 @@ function proSearch(query) {
       if (`${chapter.name} ${chapter.topics.join(' ')}`.toLowerCase().includes(value)) results.push({ type: 'Chapter', label: `${cls.label} • ${subjectName} • ${chapter.name}`, detail: chapter.topics.join(' • '), action: `eduOpenCurriculumChapter(${classNum}, '${subjectName}', '${chapter.id}')` });
       (chapter.notes || []).forEach(note => { if (`${note.title} ${note.content}`.toLowerCase().includes(value)) results.push({ type: 'Note', label: note.title, detail: `${cls.label} • ${subjectName}`, action: `eduOpenNote('${note.id}')` }); });
       (chapter.questions || []).forEach(question => { if (question.prompt.toLowerCase().includes(value)) results.push({ type: 'Practice', label: question.prompt, detail: `${cls.label} • ${subjectName} • ${chapter.name}`, action: `eduOpenPractice(${classNum}, '${subjectName}', '${chapter.id}')` }); });
+      (chapter.resources || []).forEach(resource => { if (`${resource.title} ${resource.type}`.toLowerCase().includes(value)) results.push({ type: resource.type, label: resource.title, detail: `${cls.label} • ${subjectName} • ${chapter.name}`, action: `eduLectures(${classNum}, '${subjectName}', '${chapter.id}')` }); });
     });
   }));
   const body = results.length ? results.slice(0, 30).map(result => `<div class="resource-item"><p><span class="tag">${result.type}</span></p><h3>${escapeHtml(result.label)}</h3><p>${escapeHtml(result.detail)}</p><button class="secondary-btn" onclick="${result.action}">Open result</button></div>`).join('') : '<div class="resource-item"><p>No results found. Try a subject, chapter, topic, or note title.</p></div>';
@@ -517,10 +549,10 @@ function proTab(button, tab) {
   if (button) button.classList.add('active');
   const actions = {
     dashboard: () => { closeAllModals(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
-    classes: () => eduCurriculumHub(11),
+    classes: () => eduCurriculumHub(Number(appState.settings.classNumber) || 11),
     ai: () => handleAiMode('Explain'),
-    practice: () => eduOpenPractice(11, 'all', 'all'),
-    tests: () => eduOpenTests(11, 'all', 'all'),
+    practice: () => eduOpenPractice(Number(appState.settings.classNumber) || 11, 'all', 'all'),
+    tests: () => eduOpenTests(Number(appState.settings.classNumber) || 11, 'all', 'all'),
     mistakes: () => eduMistakes(),
     progress: () => eduProgress(),
     planner: () => eduPlanner(),
@@ -531,6 +563,7 @@ function proTab(button, tab) {
 
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
+  updateDashboardStats();
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) searchInput.addEventListener('input', event => { if (event.target.value.trim().length > 1) proSearch(event.target.value); else if (!event.target.value.trim()) closeAllModals(); });
   document.querySelectorAll('[data-close-modal]').forEach(button => button.addEventListener('click', closeAllModals));

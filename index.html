@@ -48,7 +48,7 @@
       <main class="content">
         <section class="panel welcome">
           <div>
-            <h1>Good morning, Student 👋</h1>
+            <h1 id="welcomeGreeting">Good morning, Student 👋</h1>
             <p>Continue your learning journey from where you stopped.</p>
           </div>
           <button class="action-btn" data-action="continue-learning">▶ Continue Learning</button>
@@ -58,19 +58,19 @@
           <div class="stats-grid">
             <div class="stat-card">
               <small>Overall Progress</small>
-              <strong>68%</strong>
+              <strong id="overallProgressStat">0%</strong>
             </div>
             <div class="stat-card">
               <small>Study Streak</small>
-              <strong>🔥 7 days</strong>
+              <strong id="studyStreakStat">0 days</strong>
             </div>
             <div class="stat-card">
               <small>Questions Solved</small>
-              <strong>240</strong>
+              <strong id="questionsSolvedStat">0</strong>
             </div>
             <div class="stat-card">
               <small>Tests Completed</small>
-              <strong>8</strong>
+              <strong id="testsCompletedStat">0</strong>
             </div>
           </div>
         </section>
@@ -86,7 +86,7 @@
               <div>
                 <h3>Class 11 Biology</h3>
                 <p>Chapter 2 • Biological Classification</p>
-                <div class="bar"><span style="width: 72%"></span></div>
+                <div class="bar"><span id="biologyProgressBar" style="width: 0%"></span></div>
               </div>
               <button class="course-action" data-action="open-biology">Open</button>
             </article>
@@ -95,7 +95,7 @@
               <div>
                 <h3>Class 11 Chemistry</h3>
                 <p>Chapter 3 • Classification of Elements</p>
-                <div class="bar"><span style="width: 44%"></span></div>
+                <div class="bar"><span id="chemistryProgressBar" style="width: 0%"></span></div>
               </div>
               <button class="course-action" data-action="open-chemistry">Open</button>
             </article>
@@ -169,7 +169,7 @@
           <div class="tool-grid">
             <button class="tool-btn" data-tool="notes"><span class="icon">📖</span><b>Notes</b><span>Chapter-wise study material</span></button>
             <button class="tool-btn" data-tool="lectures"><span class="icon">🎬</span><b>Lectures</b><span>Watch and continue</span></button>
-            <button class="tool-btn" data-tool="pyq"><span class="icon">🗂️</span><b>PYQs</b><span>Previous questions</span></button>
+            <button class="tool-btn" data-tool="pyq"><span class="icon">🗂️</span><b>PYQ-Style</b><span>Exam-style practice</span></button>
             <button class="tool-btn" data-tool="tests"><span class="icon">📝</span><b>Mock Tests</b><span>Test your preparation</span></button>
           </div>
         </section>
